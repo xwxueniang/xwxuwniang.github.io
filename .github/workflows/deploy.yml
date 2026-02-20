@@ -1,0 +1,63 @@
+name: 自动部署AI个人网站
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: 拉取代码
+        uses: actions/checkout@v4
+
+      - name: 生成首页
+        run: |
+          cat > index.html << 'EOF'
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Skills - xwxuwniang</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:Arial,sans-serif;background:#0a1025;color:#e6e9f0;padding:30px}
+  .box{max-width:700px;margin:0 auto;background:#121a33;padding:25px;border-radius:12px}
+  h1{font-size:32px;margin-bottom:10px}
+  h2{font-size:18px;color:#a8b3d6;margin-bottom:20px}
+  .skill{display:inline-block;background:#1e294b;padding:8px 14px;border-radius:20px;margin:5px 5px 0 0}
+</style>
+</head>
+<body>
+<div class="box">
+  <h1>xwxuwniang</h1>
+  <h2>AI Skills · 自动化个人网站</h2>
+  <div>
+    <div class="skill">AI 提示词</div>
+    <div class="skill">AI 自动化</div>
+    <div class="skill">GitHub Pages</div>
+    <div class="skill">大模型应用</div>
+  </div>
+  <br>
+  <p>域名：https://xwxuwniang.github.io</p>
+  <p>自动部署 · 永久免费</p>
+</div>
+</body>
+</html>
+EOF
+
+      - name: 上传页面
+        uses: actions/upload-pages-artifact@v3
+
+      - name: 发布到 GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
